@@ -261,11 +261,18 @@ export default {
 
 $primary: #0069ff;
 
+input {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    overflow: visible;
+}
+
 .pinput {
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
-
     animation-duration: 0.85s;
 }
 
@@ -289,11 +296,6 @@ $primary: #0069ff;
         padding: 16px 8px;
         color: transparent;
         text-shadow: 0 0 0 #333;
-        font-family: inherit;
-        font-size: 100%;
-        line-height: 1.15;
-        margin: 0;
-        overflow: visible;
 
         &:focus {
             border-color: $primary;
