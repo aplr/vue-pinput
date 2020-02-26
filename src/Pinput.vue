@@ -9,9 +9,8 @@
             <input
                 ref="input"
                 :type="inputType"
-                v-if="field.type === 'field'"
                 v-model="rawCode[index]"
-                @keyup="handleKeyUp(field, index, $event)"
+                v-if="field.type === 'field'"
                 @keydown="handleKeyDown(field, index, $event)"
                 @paste="handlePaste"
             />
@@ -41,7 +40,7 @@ export default {
             type: String,
             required: false,
             default: 'alpha',
-            validator: val => ~['num', 'hex', 'alpha'].indexOf(val)
+            validator: val => ['num', 'hex', 'alpha'].includes(val)
         },
         /*
          * Pin code format. If specified, `length` and `mode` properties are ignored.
@@ -63,6 +62,11 @@ export default {
             type: Boolean,
             required: false,
             default: false
+        },
+        autofocus: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
 
@@ -70,14 +74,18 @@ export default {
         rawCode: []
     }),
 
+    mounted() {
+        this.$nextTick(() => {
+            this.autofocus && this.$refs.input[0].focus()
+        })
+    },
+
     computed: {
         parsedFormat() {
             try {
-                return this.format
-                    ? parseFormat(this.format)
-                    : convertFormat(this.length, this.type)
+                return parseFormat(this.format)
             } catch {
-                return []
+                return convertFormat(this.length, this.type)
             }
         },
         hasFormat() {
@@ -123,70 +131,60 @@ export default {
             }
         },
         handleKeyDown({ field }, index, e) {
-            const inputIndex = this.convertIndex(index)
-            e.target.setAttribute('data-prev', e.target.value)
-
-            if (
-                ~['Backspace', 'Delete'].indexOf(e.code) ||
-                e.metaKey ||
-                e.ctrlKey
-            ) {
-                return
-            }
-
-            if (~['Tab', 'ArrowLeft', 'ArrowRight'].indexOf(e.code)) {
-                this.handleNavigate(e.code, inputIndex)
-                e.preventDefault()
-                return
-            }
-
-            if (!validateField(field, e.key) || e.target.value.length > 0) {
-                e.preventDefault()
-                return
-            }
-
-            if (e.target.value.length > 0 && inputIndex < this.codeLength - 1) {
-                this.$refs.input[inputIndex + 1].focus()
-                e.preventDefault()
-            }
-        },
-        handleKeyUp({ field }, index, e) {
             const inputIndex = this.convertIndex(index),
-                // previousValue = e.target.getAttribute('data-prev'),
                 valid = validateField(field, e.key)
 
-            if (valid && inputIndex === this.codeLength - 1) {
-                e.target.blur()
+            if (e.metaKey || e.ctrlKey) {
                 return
+            }
+
+            e.preventDefault()
+
+            if (['Backspace', 'Delete'].includes(e.code)) {
+                this.setCharacter(inputIndex, '')
+
+                if (e.code === 'Backspace' && e.target.value.length === 0) {
+                    this.handleNavigate(e.code, inputIndex)
+                }
+
+                return
+            }
+
+            if (['Tab', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+                this.handleNavigate(e.code, inputIndex)
+                return
+            }
+
+            if (valid) {
+                this.setCharacter(inputIndex, e.key)
+            }
+
+            if (!(valid || ['Shift', 'Alt'].includes(e.key))) {
+                this.shake()
             }
 
             if (valid && inputIndex < this.codeLength - 1) {
                 this.$refs.input[inputIndex + 1].focus()
             }
 
-            if (
-                ~['Backspace', 'Delete'].indexOf(e.code) &&
-                // previousValue.length == 0 &&
-                inputIndex > 0
-            ) {
-                this.$refs.input[inputIndex - 1].focus()
-                return
+            if (valid && inputIndex === this.codeLength - 1) {
+                e.target.blur()
             }
         },
         handleNavigate(key, index) {
             if (
-                ~['Tab', 'ArrowRight'].indexOf(key) &&
+                ['Tab', 'ArrowRight'].includes(key) &&
                 index < this.codeLength - 1
             ) {
                 this.$refs.input[index + 1].focus()
             }
 
-            if (~['ArrowLeft'].indexOf(key) && index > 0) {
-                this.$refs.input[index - 1].focus()
+            if (['Tab'].includes(key) && index === this.codeLength - 1) {
+                this.$refs.input[0].focus()
             }
 
-            if (~['Tab'].indexOf(key) && index === this.codeLength - 1) {
-                this.$refs.input[0].focus()
+            if (['ArrowLeft', 'Backspace'].includes(key) && index > 0) {
+                this.$refs.input[index - 1].focus()
             }
         },
         handlePaste(e) {
@@ -218,6 +216,26 @@ export default {
                     .slice(0, index)
                     .filter(({ type }) => type === 'divider').length
             )
+        },
+        setCharacter(index, value) {
+            this.rawCode.splice(index, 1, value)
+        },
+        reset() {
+            this.rawCode = []
+        },
+        shake() {
+            return new Promise(resolve => {
+                this.$el.classList.add('animated', 'shake')
+
+                const handleEnd = () => {
+                    this.$el.classList.remove('animated', 'shake')
+                    this.$el.removeEventListener('animationend', handleEnd)
+
+                    resolve()
+                }
+
+                this.$el.addEventListener('animationend', handleEnd)
+            })
         }
     },
 
@@ -240,12 +258,16 @@ export default {
 
 <style lang="scss">
 @import './reset.scss';
+@import '~animate.css';
 
 $primary: #0069ff;
 
 .pinput {
     display: flex;
     flex-wrap: nowrap;
+    justify-content: center;
+
+    animation-duration: 0.85s;
 }
 
 .pinputBox {
@@ -266,9 +288,12 @@ $primary: #0069ff;
         text-align: center;
         width: 68px;
         padding: 16px 8px;
+        color: transparent;
+        text-shadow: 0 0 0 #333;
 
         &:focus {
             border-color: $primary;
+            outline: none;
         }
     }
 }

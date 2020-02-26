@@ -70,8 +70,9 @@
                     :format="format"
                     :secure="secure"
                     v-model="code"
+                    autofocus
                 />
-                <div class="mt-2 text-center text-monospace">
+                <div class="h5 mt-3 text-center text-monospace">
                     <span v-if="code">Code: {{ code }}</span>
                     <span v-if="!code">Enter a valid code!</span>
                 </div>
