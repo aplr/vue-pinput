@@ -6,7 +6,6 @@
   "license": "MIT",
   "main": "dist/pinput.umd.js",
   "unpkg": "dist/pinput.umd.min.js",
-  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/aplr/vue-pinput.git"

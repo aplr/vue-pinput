@@ -257,7 +257,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import './reset.scss';
 @import '~animate.css';
 
 $primary: #0069ff;
@@ -290,6 +289,11 @@ $primary: #0069ff;
         padding: 16px 8px;
         color: transparent;
         text-shadow: 0 0 0 #333;
+        font-family: inherit;
+        font-size: 100%;
+        line-height: 1.15;
+        margin: 0;
+        overflow: visible;
 
         &:focus {
             border-color: $primary;
