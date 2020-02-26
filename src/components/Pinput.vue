@@ -53,6 +53,11 @@ export default {
             type: String,
             required: false,
             default: null
+        },
+        withDivider: {
+            type: Boolean,
+            required: false,
+            default: true
         }
     },
 
@@ -81,14 +86,33 @@ export default {
         code() {
             return this.rawCode.filter(char => !!char)
         },
+        hydratedCode() {
+            return this.parsedFormat.map((field, index) =>
+                field.type === 'field' ? this.rawCode[index] : field.symbol
+            )
+        },
         codeLength() {
             return this.hasFormat ? this.fields.length : this.length
+        },
+        valid() {
+            return this.parsedFormat.every((field, index) =>
+                field.type === 'field'
+                    ? validateField(field.field, this.rawCode[index])
+                    : true
+            )
         }
     },
 
     methods: {
         handleInput() {
-            this.$emit('input', this.code.join())
+            if (this.valid) {
+                this.$emit(
+                    'input',
+                    (this.withDivider ? this.hydratedCode : this.code).join('')
+                )
+            } else {
+                this.$emit('input', '')
+            }
         },
         handleKeyDown({ field }, index, e) {
             const inputIndex = this.convertIndex(index)
@@ -108,20 +132,19 @@ export default {
                 return
             }
 
-            if (!validateField(field, e.key)) {
+            if (!validateField(field, e.key) || e.target.value.length > 0) {
                 e.preventDefault()
                 return
             }
 
             if (e.target.value.length > 0 && inputIndex < this.codeLength - 1) {
                 this.$refs.input[inputIndex + 1].focus()
-            } else if (e.target.value.length > 0) {
                 e.preventDefault()
             }
         },
         handleKeyUp({ field }, index, e) {
             const inputIndex = this.convertIndex(index),
-                previousValue = e.target.getAttribute('data-prev'),
+                // previousValue = e.target.getAttribute('data-prev'),
                 valid = validateField(field, e.key)
 
             if (valid && inputIndex === this.codeLength - 1) {
@@ -142,7 +165,7 @@ export default {
 
             if (
                 ~['Backspace', 'Delete'].indexOf(e.code) &&
-                previousValue.length == 0 &&
+                // previousValue.length == 0 &&
                 inputIndex > 0
             ) {
                 this.$refs.input[inputIndex - 1].focus()
@@ -190,23 +213,54 @@ export default {
         },
         format() {
             this.reset()
+        },
+        rawCode() {
+            this.handleInput()
         }
     }
 }
 </script>
 
 <style lang="scss">
+@import './reset.scss';
+
+$primary: #0069ff;
+
 .pinput {
     display: flex;
     flex-wrap: nowrap;
 }
 
-.characterBox {
+.pinputBox {
     flex: 0 0 auto;
+    font-size: 32px;
     border-radius: 1rem;
 
-    & + .characterBox {
+    & + .pinputBox {
         margin-left: 1rem;
     }
+}
+
+.pinputBox.field {
+    input {
+        border: 4px solid #ddd;
+        border-radius: 16px;
+        outline: none !important;
+        text-align: center;
+        width: 68px;
+        padding: 16px 8px;
+
+        &:focus {
+            border-color: $primary;
+        }
+    }
+}
+
+.pinputBox.divider {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 8px;
+    border: 4px solid transparent;
 }
 </style>

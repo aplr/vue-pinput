@@ -53,8 +53,19 @@
                 </div>
             </b-form>
         </div>
-        <div>
-            <Pinput :length="length" :type="type" :format="format" />
+        <div :class="$style.content">
+            <div :class="$style.input">
+                <Pinput
+                    :length="length"
+                    :type="type"
+                    :format="format"
+                    v-model="code"
+                />
+                <div class="mt-2 text-center text-monospace">
+                    <span v-if="code">Code: {{ code }}</span>
+                    <span v-if="!code">Enter a valid code!</span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -71,6 +82,7 @@ export default {
     },
 
     data: () => ({
+        code: '',
         format: '',
         rawLength: 4,
         type: 'num',
@@ -145,7 +157,7 @@ export default {
 
 <style lang="scss" module>
 .app {
-    height: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -168,5 +180,16 @@ export default {
         padding-left: 1rem;
         border-left: 1px solid #eee;
     }
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.input {
+    margin: 0 auto;
 }
 </style>
