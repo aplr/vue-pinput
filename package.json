@@ -12,7 +12,7 @@
   "unpkg": "dist/pinput.umd.min.js",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --name pinput --formats umd,umd-min src/PinCode.vue",
+    "build": "vue-cli-service build --target lib --name pinput --formats umd,umd-min src/Pinput.vue",
     "demo": "vue-cli-service build --target app --name pinput --formats umd,umd-min --mode demo --inline-vue",
     "lint": "vue-cli-service lint",
     "prepublish": "npm run lint && npm run build"
@@ -53,6 +53,7 @@
     ]
   },
   "files": [
+    "dist/pinput.css",
     "dist/pinput.umd.js",
     "dist/pinput.umd.min.js"
   ]

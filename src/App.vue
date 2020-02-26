@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import Pinput from './components/Pinput'
+import Pinput from './Pinput'
 import { parseFormat } from './format'
 
 export default {

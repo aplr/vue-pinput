@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { parseFormat, convertFormat, validateField } from '../format'
+import { parseFormat, convertFormat, validateField } from './format'
 
 export default {
     props: {
