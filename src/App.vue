@@ -167,12 +167,14 @@ export default {
 }
 </script>
 
-<style lang="scss" module>
+<style lang="scss">
 $blue: #0069ff;
 
 @import '~bootstrap/scss/bootstrap';
 @import '~bootstrap-vue/src/index';
+</style>
 
+<style lang="scss" module>
 .app {
     height: 100vh;
     display: flex;
