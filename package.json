@@ -11,6 +11,7 @@
     "url": "https://github.com/aplr/vue-pinput.git"
   },
   "files": [
+    "src/pinput.scss",
     "dist/pinput.css",
     "dist/pinput.umd.js",
     "dist/pinput.umd.min.js"

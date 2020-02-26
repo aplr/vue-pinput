@@ -7,8 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 
-import './App.scss'
-
 library.add(faInfoCircle)
 
 Vue.use(BootstrapVue)
