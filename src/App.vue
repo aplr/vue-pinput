@@ -9,6 +9,15 @@
             </h5>
             <b-form inline>
                 <div :class="$style.controlGroup">
+                    <b-form-checkbox
+                        v-model="secure"
+                        name="secureSwitch"
+                        switch
+                    >
+                        Secure
+                    </b-form-checkbox>
+                </div>
+                <div :class="$style.controlGroup">
                     <label for="inputLength" class="mr-2 text-nowrap">
                         <span>Length ({{ length }})</span>
                     </label>
@@ -56,9 +65,10 @@
         <div :class="$style.content">
             <div :class="$style.input">
                 <Pinput
-                    :length="length"
                     :type="type"
+                    :length="length"
                     :format="format"
+                    :secure="secure"
                     v-model="code"
                 />
                 <div class="mt-2 text-center text-monospace">
@@ -84,6 +94,7 @@ export default {
     data: () => ({
         code: '',
         format: '',
+        secure: false,
         rawLength: 4,
         type: 'num',
         types: [

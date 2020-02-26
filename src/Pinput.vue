@@ -7,8 +7,8 @@
             v-for="(field, index) in parsedFormat"
         >
             <input
-                type="text"
                 ref="input"
+                :type="inputType"
                 v-if="field.type === 'field'"
                 v-model="rawCode[index]"
                 @keyup="handleKeyUp(field, index, $event)"
@@ -58,6 +58,11 @@ export default {
             type: Boolean,
             required: false,
             default: true
+        },
+        secure: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
 
@@ -70,7 +75,7 @@ export default {
             try {
                 return this.format
                     ? parseFormat(this.format)
-                    : convertFormat(this.length, this.mode)
+                    : convertFormat(this.length, this.type)
             } catch {
                 return []
             }
@@ -100,6 +105,9 @@ export default {
                     ? validateField(field.field, this.rawCode[index])
                     : true
             )
+        },
+        inputType() {
+            return this.secure ? 'password' : 'text'
         }
     },
 
@@ -119,16 +127,16 @@ export default {
             e.target.setAttribute('data-prev', e.target.value)
 
             if (
-                ~[
-                    'Backspace',
-                    'Delete',
-                    'Tab',
-                    'ArrowLeft',
-                    'ArrowRight'
-                ].indexOf(e.code) ||
+                ~['Backspace', 'Delete'].indexOf(e.code) ||
                 e.metaKey ||
                 e.ctrlKey
             ) {
+                return
+            }
+
+            if (~['Tab', 'ArrowLeft', 'ArrowRight'].indexOf(e.code)) {
+                this.handleNavigate(e.code, inputIndex)
+                e.preventDefault()
                 return
             }
 
@@ -152,15 +160,8 @@ export default {
                 return
             }
 
-            if (
-                (~['Tab', 'ArrowRight'].indexOf(e.code) || valid) &&
-                inputIndex < this.codeLength - 1
-            ) {
+            if (valid && inputIndex < this.codeLength - 1) {
                 this.$refs.input[inputIndex + 1].focus()
-            }
-
-            if (~['ArrowLeft'].indexOf(e.code) && inputIndex > 0) {
-                this.$refs.input[inputIndex - 1].focus()
             }
 
             if (
@@ -170,6 +171,22 @@ export default {
             ) {
                 this.$refs.input[inputIndex - 1].focus()
                 return
+            }
+        },
+        handleNavigate(key, index) {
+            if (
+                ~['Tab', 'ArrowRight'].indexOf(key) &&
+                index < this.codeLength - 1
+            ) {
+                this.$refs.input[index + 1].focus()
+            }
+
+            if (~['ArrowLeft'].indexOf(key) && index > 0) {
+                this.$refs.input[index - 1].focus()
+            }
+
+            if (~['Tab'].indexOf(key) && index === this.codeLength - 1) {
+                this.$refs.input[0].focus()
             }
         },
         handlePaste(e) {
