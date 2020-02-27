@@ -70,7 +70,7 @@ export default {
         },
         validator: {
             required: false,
-            default: () => /[0-9a-f]/i
+            default: () => /^[^\s]$/i
         }
     },
 
@@ -157,7 +157,11 @@ export default {
             const inputIndex = this.convertIndex(index),
                 valid = this.validateField(field, e.key)
 
-            if (e.metaKey || e.ctrlKey) {
+            if (
+                e.metaKey ||
+                e.ctrlKey ||
+                ['Shift', 'Alt', 'Meta', 'Ctrl'].includes(e.key)
+            ) {
                 return
             }
 
@@ -178,12 +182,12 @@ export default {
                 return
             }
 
-            if (valid) {
-                this.setCharacter(index, e.key)
-            }
-
             if (!(valid || ['Shift', 'Alt'].includes(e.key))) {
                 this.shake()
+            }
+
+            if (valid) {
+                this.setCharacter(index, e.key)
             }
 
             if (valid && inputIndex < this.codeLength - 1) {
