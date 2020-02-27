@@ -16,7 +16,8 @@
     var types = {
       h: 'hex',
       d: 'num',
-      c: 'alpha'
+      c: 'alpha',
+      a: 'custom'
     };
     return types[type];
   }

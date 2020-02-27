@@ -34,18 +34,18 @@ export default {
         },
         /*
          * Field type (simple mode).
-         * One of { 'num', 'hex', 'alpha' }
+         * One of { 'num', 'hex', 'alpha', 'custom' }
          */
         type: {
             type: String,
             required: false,
             default: 'alpha',
-            validator: val => ['num', 'hex', 'alpha'].includes(val)
+            validator: val => ['num', 'hex', 'alpha', 'custom'].includes(val)
         },
         /*
          * Pin code format. If specified, `length` and `mode` properties are ignored.
          * Format must be something like "(({%f}+)(%s)?)*{%f}", where
-         *  %f: field type, one of { 'd', 'h', 'c' } (num, hex, alpha)
+         *  %f: field type, one of { 'd', 'h', 'c', 'a' } (num, hex, alpha, custom)
          *  %s: space, one of { '-', ' ' }
          */
         format: {
@@ -67,6 +67,11 @@ export default {
             type: Boolean,
             required: false,
             default: false
+        },
+        validator: {
+            type: [Function, RegExp, String, Array],
+            required: false,
+            default: () => true
         }
     },
 
@@ -110,7 +115,7 @@ export default {
         valid() {
             return this.parsedFormat.every((field, index) =>
                 field.type === 'field'
-                    ? validateField(field.field, this.rawCode[index])
+                    ? this.validateField(field.field, this.rawCode[index])
                     : true
             )
         },
@@ -120,6 +125,25 @@ export default {
     },
 
     methods: {
+        validateField(field, char) {
+            return field === 'custom'
+                ? this.validateCustomField(char)
+                : validateField(field, char)
+        },
+        validateCustomField(char) {
+            if (typeof this.validator === RegExp) {
+                return this.validator.test(char)
+            } else if (
+                typeof this.validator === String ||
+                typeof this.validator === Array
+            ) {
+                return this.validator.includes(char)
+            } else if (typeof this.validator === Function) {
+                return !!this.validator(char)
+            }
+
+            return false
+        },
         handleInput() {
             if (this.valid) {
                 this.$emit(
@@ -132,7 +156,7 @@ export default {
         },
         handleKeyDown({ field }, index, e) {
             const inputIndex = this.convertIndex(index),
-                valid = validateField(field, e.key)
+                valid = this.validateField(field, e.key)
 
             if (e.metaKey || e.ctrlKey) {
                 return
@@ -197,7 +221,7 @@ export default {
             const valid =
                 chars.length >= this.codeLength &&
                 chars.every((char, index) =>
-                    validateField(this.fields[index], char)
+                    this.validateField(this.fields[index], char)
                 )
 
             if (valid) {

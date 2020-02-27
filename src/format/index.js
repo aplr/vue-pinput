@@ -3,7 +3,8 @@ import parser from './grammar.pegjs'
 const validatorMap = {
     hex: /^[0-9a-f]$/i,
     num: /^[0-9]$/,
-    alpha: /^[0-9a-z]$/i
+    alpha: /^[0-9a-z]$/i,
+    custom: /.*/
 }
 
 export function parseFormat(format) {
