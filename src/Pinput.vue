@@ -69,9 +69,8 @@ export default {
             default: false
         },
         validator: {
-            type: [Function, RegExp, String, Array],
             required: false,
-            default: () => true
+            default: () => /[0-9a-f]/i
         }
     },
 
@@ -131,7 +130,7 @@ export default {
                 : validateField(field, char)
         },
         validateCustomField(char) {
-            if (typeof this.validator === RegExp) {
+            if (this.validator instanceof RegExp) {
                 return this.validator.test(char)
             } else if (
                 typeof this.validator === String ||
