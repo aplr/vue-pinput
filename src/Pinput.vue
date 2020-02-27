@@ -164,7 +164,7 @@ export default {
             e.preventDefault()
 
             if (['Backspace', 'Delete'].includes(e.code)) {
-                this.setCharacter(inputIndex, '')
+                this.setCharacter(index, '')
 
                 if (e.code === 'Backspace' && e.target.value.length === 0) {
                     this.handleNavigate(e.code, inputIndex)
@@ -179,7 +179,7 @@ export default {
             }
 
             if (valid) {
-                this.setCharacter(inputIndex, e.key)
+                this.setCharacter(index, e.key)
             }
 
             if (!(valid || ['Shift', 'Alt'].includes(e.key))) {
@@ -241,7 +241,7 @@ export default {
             )
         },
         setCharacter(index, value) {
-            this.rawCode.splice(index, 1, value)
+            this.$set(this.rawCode, index, value)
         },
         reset() {
             this.rawCode = []
