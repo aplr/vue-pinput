@@ -39,7 +39,7 @@ Field
   = "{" _ type:FieldType _ "}" { return type; }
 
 FieldType
-  = char:[dhc] { return { type: "field", field: mapFieldType(char) }; }
+  = char:[dhcv] { return { type: "field", field: mapFieldType(char) }; }
   
 Divider "divider"
   = div:[ -] { return { type: "divider", symbol: div }; }
