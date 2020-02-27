@@ -45,7 +45,7 @@ export default {
         /*
          * Pin code format. If specified, `length` and `mode` properties are ignored.
          * Format must be something like "(({%f}+)(%s)?)*{%f}", where
-         *  %f: field type, one of { 'd', 'h', 'c', 'a' } (num, hex, alpha, custom)
+         *  %f: field type, one of { 'd', 'h', 'c', 'v' } (num, hex, alpha, custom)
          *  %s: space, one of { '-', ' ' }
          */
         format: {

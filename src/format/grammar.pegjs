@@ -17,7 +17,7 @@
       h: 'hex',
       d: 'num',
       c: 'alpha',
-      a: 'custom'
+      v: 'custom'
     };
     return types[type];
   }
