@@ -231,6 +231,8 @@ export default {
                 this.rawCode = this.parsedFormat.map(({ type }) =>
                     type === 'field' ? chars.shift() : undefined
                 )
+            } else {
+                this.shake()
             }
 
             e.preventDefault()
